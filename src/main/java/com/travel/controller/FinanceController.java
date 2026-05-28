@@ -211,8 +211,14 @@ public class FinanceController {
         return financeService.getRecentExpenses();
     }
 
+    // ===================== PENDING REIMBURSEMENTS =====================
+
+    @GetMapping("/pending-reimbursements")
+    public List<ExpenseResponse> getPendingReimbursements() {
+        return financeService.getPendingReimbursements();
+    }
+
     // ===================== PAYMENT HISTORY =====================
-    // ❌ FIX: removed getPaymentHistory (not in service)
     
     @PutMapping("/travel-reject/{requestId}")
     public String rejectTravelRequest(@PathVariable Long requestId) {

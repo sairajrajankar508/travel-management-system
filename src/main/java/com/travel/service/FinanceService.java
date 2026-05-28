@@ -509,6 +509,14 @@ public class FinanceService {
 
         expenseRepository.save(expense);
 
+        TravelRequest request = expense.getTravelRequest();
+
+        if (request != null) {
+            request.setStatus(RequestStatus.REIMBURSED);
+            request.setReimbursed(true);
+            travelRequestRepository.save(request);
+        }
+
         return "Expense reimbursed successfully";
     }
 
@@ -538,12 +546,12 @@ public class FinanceService {
     }
 
     // =====================================================
-    // PENDING REIMBURSEMENTS
+    // PENDING REIMBURSEMENTS (expenses submitted by employee)
     // =====================================================
     public List<ExpenseResponse> getPendingReimbursements() {
 
         List<Expense> expenses =
-                expenseRepository.findByStatus(ExpenseStatus.FINANCE_APPROVED);
+                expenseRepository.findByStatus(ExpenseStatus.SUBMITTED);
 
         return expenses.stream().map(e -> {
 
@@ -579,16 +587,14 @@ public class FinanceService {
     }
 
     // =====================================================
-    // FINANCE REVIEW REQUESTS
+    // FINANCE REVIEW REQUESTS (Travel Requests pending finance approval)
     // =====================================================
     public List<TravelRequestResponse> getFinanceReviewRequests() {
 
-        List<Expense> expenses =
-                expenseRepository.findByStatus(ExpenseStatus.FINANCE_REVIEW);
+        List<TravelRequest> requests =
+                travelRequestRepository.findByStatus(RequestStatus.FINANCE_REVIEW);
 
-        return expenses.stream().map(e -> {
-
-            TravelRequest r = e.getTravelRequest();
+        return requests.stream().map(r -> {
 
             TravelRequestResponse dto = new TravelRequestResponse();
 
@@ -599,7 +605,10 @@ public class FinanceService {
             dto.setStartDate(r.getStartDate());
             dto.setEndDate(r.getEndDate());
             dto.setBudget(r.getBudget());
+            dto.setTransportMode(r.getTransportMode());
+            dto.setAccommodation(r.getAccommodation());
             dto.setStatus(r.getStatus());
+            dto.setManagerComment(r.getManagerComment());
             dto.setEmployeeName(r.getUser().getName());
 
             return dto;
