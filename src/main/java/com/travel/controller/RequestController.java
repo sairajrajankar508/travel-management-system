@@ -54,7 +54,7 @@ import com.travel.enums.RequestStatus;
 import com.travel.repository.TravelRequestRepository;
 
 @RestController
-@RequestMapping("/admin/requests")
+@RequestMapping("/api/admin/requests")
 @CrossOrigin("*")
 public class RequestController {
 

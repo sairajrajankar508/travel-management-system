@@ -45,7 +45,7 @@ import com.travel.entity.Itinerary;
 import com.travel.service.ItineraryService;
 
 @RestController
-@RequestMapping("/itinerary")
+@RequestMapping("/api/itinerary")
 @CrossOrigin("*")
 public class ItineraryController {
 

@@ -209,21 +209,28 @@
 
 package com.travel.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.travel.dto.*;
+import com.travel.enums.ExpenseCategory;
 import com.travel.service.EmployeeService;
+import com.travel.service.ExpenseService;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/api/employee")
 @CrossOrigin("*")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private ExpenseService expenseService;
 
     // =====================================================
     // CREATE REQUEST
@@ -269,7 +276,7 @@ public class EmployeeController {
     }
 
     // =====================================================
-    // CANCEL REQUEST
+    // CANCEL REQUEST (soft)
     // =====================================================
     @PutMapping("/cancel/{requestId}")
     public String cancelRequest(
@@ -277,6 +284,68 @@ public class EmployeeController {
             @RequestHeader("Authorization") String token
     ) {
         return employeeService.cancelRequest(requestId, token);
+    }
+
+    // =====================================================
+    // DELETE REQUEST (hard)
+    // =====================================================
+    @DeleteMapping("/delete/{requestId}")
+    public String deleteRequest(
+            @PathVariable Long requestId,
+            @RequestHeader("Authorization") String token
+    ) {
+        return employeeService.deleteRequest(requestId, token);
+    }
+
+    // =====================================================
+    // ADD EXPENSE (WITH FILE UPLOAD)
+    // =====================================================
+    @PostMapping("/expense/add")
+    public String addExpense(
+            @RequestParam("title") String title,
+            @RequestParam("amount") Double amount,
+            @RequestParam("category") String category,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam("expenseDate") String expenseDate,
+            @RequestParam("travelRequestId") Long travelRequestId,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestHeader("Authorization") String token
+    ) throws IOException {
+
+        Long userId = employeeService.getUserIdFromToken(token);
+
+        ExpenseDTO dto = new ExpenseDTO();
+        dto.setTitle(title);
+        dto.setAmount(amount);
+        dto.setCategory(ExpenseCategory.valueOf(category));
+        dto.setDescription(description);
+        dto.setExpenseDate(java.time.LocalDate.parse(expenseDate));
+        dto.setTravelRequestId(travelRequestId);
+
+        return expenseService.addExpense(userId, dto, file);
+    }
+
+    // =====================================================
+    // GET MY EXPENSES
+    // =====================================================
+    @GetMapping("/expenses")
+    public List<ExpenseResponse> getMyExpenses(
+            @RequestHeader("Authorization") String token
+    ) {
+        Long userId = employeeService.getUserIdFromToken(token);
+        return expenseService.getMyExpenses(userId);
+    }
+
+    // =====================================================
+    // DELETE EXPENSE
+    // =====================================================
+    @DeleteMapping("/expense/{expenseId}")
+    public String deleteExpense(
+            @PathVariable Long expenseId,
+            @RequestHeader("Authorization") String token
+    ) {
+        Long userId = employeeService.getUserIdFromToken(token);
+        return expenseService.deleteExpense(expenseId, userId);
     }
 
     // =====================================================

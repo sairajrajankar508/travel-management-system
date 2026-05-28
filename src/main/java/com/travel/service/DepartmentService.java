@@ -1,6 +1,48 @@
+//package com.travel.service;
+//
+//import java.util.List;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.stereotype.Service;
+//
+//import com.travel.entity.Department;
+//import com.travel.repository.DepartmentRepository;
+//
+//@Service
+//public class DepartmentService {
+//
+//    @Autowired
+//    private DepartmentRepository departmentRepository;
+//
+//    // CREATE DEPARTMENT
+//    public Department create(Department dept) {
+//        dept.setActive(true);
+//        return departmentRepository.save(dept);
+//    }
+//
+//    // GET ALL
+//    public List<Department> getAll() {
+//        return departmentRepository.findAll();
+//    }
+//
+//    // DELETE
+//    public String delete(Long id) {
+//
+//        Department dept = departmentRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Department not found"));
+//
+//        departmentRepository.delete(dept);
+//
+//        return "Department deleted successfully";
+//    }
+//}
+
+
+
 package com.travel.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,19 +62,25 @@ public class DepartmentService {
         return departmentRepository.save(dept);
     }
 
-    // GET ALL
+    // GET ALL ACTIVE DEPARTMENTS ONLY (IMPROVED)
     public List<Department> getAll() {
-        return departmentRepository.findAll();
+        return departmentRepository.findAll()
+                .stream()
+                .filter(Department::isActive)
+                .collect(Collectors.toList());
     }
 
-    // DELETE
+    // DELETE (SOFT DELETE IMPROVED)
     public String delete(Long id) {
 
         Department dept = departmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Department not found"));
 
-        departmentRepository.delete(dept);
+        // Soft delete instead of hard delete (recommended)
+        dept.setActive(false);
 
-        return "Department deleted successfully";
+        departmentRepository.save(dept);
+
+        return "Department deactivated successfully";
     }
 }

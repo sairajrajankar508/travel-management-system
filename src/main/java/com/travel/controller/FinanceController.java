@@ -132,17 +132,28 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.travel.dto.ProfileResponse;
+import com.travel.dto.ProfileUpdateDTO;
 import com.travel.dto.ExpenseResponse;
 import com.travel.dto.TravelRequestResponse;
+import com.travel.entity.AuditLog;
+import com.travel.repository.AuditLogRepository;
+import com.travel.service.EmployeeService;
 import com.travel.service.FinanceService;
 
 @RestController
-@RequestMapping("/finance")
+@RequestMapping("/api/finance")
 @CrossOrigin("*")
 public class FinanceController {
 
     @Autowired
     private FinanceService financeService;
+
+    @Autowired
+    private EmployeeService employeeService;
+
+    @Autowired
+    private AuditLogRepository auditLogRepository;
 
     // ===================== TRAVEL REQUESTS =====================
 
@@ -211,6 +222,30 @@ public class FinanceController {
     @GetMapping("/payment-history")
     public List<ExpenseResponse> getPaymentHistory() {
         return financeService.getPaymentHistory();
+    }
+
+    // ===================== PROFILE =====================
+    @GetMapping("/profile")
+    public ProfileResponse getProfile(
+            @RequestHeader("Authorization") String token
+    ) {
+        Long userId = employeeService.getUserIdFromToken(token);
+        return employeeService.getProfile(userId);
+    }
+
+    @PutMapping("/profile/update")
+    public String updateProfile(
+            @RequestHeader("Authorization") String token,
+            @RequestBody ProfileUpdateDTO dto
+    ) {
+        Long userId = employeeService.getUserIdFromToken(token);
+        return employeeService.updateProfile(userId, dto);
+    }
+
+    // ===================== AUDIT & VERIFICATION =====================
+    @GetMapping("/audit/logs")
+    public List<AuditLog> getAuditLogs() {
+        return auditLogRepository.findAll();
     }
     
 }

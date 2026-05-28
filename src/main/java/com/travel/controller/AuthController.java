@@ -1,21 +1,48 @@
-package com.travel.controller;
+//package com.travel.controller;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.web.bind.annotation.*;
+//
+//import com.travel.dto.LoginRequest;
+//import com.travel.dto.LoginResponse;
+//import com.travel.service.UserService;
+//
+//@RestController
+//@RequestMapping("/auth")
+//public class AuthController {
+//
+//    @Autowired
+//    private UserService userService;
+//
+//    @PostMapping("/login")
+//    public LoginResponse login(@RequestBody LoginRequest request) {
+//        return userService.login(request);
+//    }
+//}
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+
+
+
+package com.travel.controller;
 
 import com.travel.dto.LoginRequest;
 import com.travel.dto.LoginResponse;
 import com.travel.service.UserService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
+@CrossOrigin("*")
 public class AuthController {
 
     @Autowired
     private UserService userService;
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
-        return userService.login(request);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(userService.login(request));
     }
 }

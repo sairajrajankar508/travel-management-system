@@ -40,7 +40,7 @@ import com.travel.enums.ExpenseCategory;
 import com.travel.service.ExpenseService;
 
 @RestController
-@RequestMapping("/expense")
+@RequestMapping("/api/expense")
 @CrossOrigin("*")
 public class ExpenseController {
 

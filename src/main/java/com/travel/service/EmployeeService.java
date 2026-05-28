@@ -380,7 +380,7 @@ public class EmployeeService {
     }
 
     // =====================================================
-    // 5. CANCEL REQUEST
+    // 5. CANCEL REQUEST (soft cancel)
     // =====================================================
     public String cancelRequest(Long requestId, String token) {
 
@@ -398,6 +398,29 @@ public class EmployeeService {
         travelRequestRepository.save(req);
 
         return "Request cancelled";
+    }
+
+    // =====================================================
+    // 6. DELETE REQUEST (hard delete)
+    // =====================================================
+    public String deleteRequest(Long requestId, String token) {
+
+        Long userId = getUserIdFromToken(token);
+
+        TravelRequest req = travelRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        if (!req.getUser().getId().equals(userId)) {
+            return "Unauthorized";
+        }
+
+        if (req.getStatus() != RequestStatus.DRAFT) {
+            return "Only draft can be deleted";
+        }
+
+        travelRequestRepository.delete(req);
+
+        return "Request deleted";
     }
 
     // =====================================================

@@ -341,4 +341,54 @@ public class ExpenseService {
 
                 }).collect(Collectors.toList());
     }
+
+    // =====================================================
+    // GET MY EXPENSES
+    // =====================================================
+    public List<ExpenseResponse> getMyExpenses(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return expenseRepository.findByUser(user)
+                .stream()
+                .map(exp -> {
+
+                    ExpenseResponse dto = new ExpenseResponse();
+
+                    dto.setId(exp.getId());
+                    dto.setTitle(exp.getTitle());
+                    dto.setAmount(exp.getAmount());
+                    dto.setCategory(exp.getCategory());
+                    dto.setDescription(exp.getDescription());
+                    dto.setExpenseDate(exp.getExpenseDate());
+                    dto.setStatus(exp.getStatus());
+                    dto.setReceiptUrl(exp.getReceiptUrl());
+
+                    if (exp.getTravelRequest() != null) {
+                        dto.setTravelRequestId(exp.getTravelRequest().getId());
+                    }
+
+                    return dto;
+
+                })
+                .collect(Collectors.toList());
+    }
+
+    // =====================================================
+    // DELETE EXPENSE
+    // =====================================================
+    public String deleteExpense(Long expenseId, Long userId) {
+
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
+
+        if (!expense.getUser().getId().equals(userId)) {
+            return "Unauthorized";
+        }
+
+        expenseRepository.delete(expense);
+
+        return "Expense deleted successfully";
+    }
 }
