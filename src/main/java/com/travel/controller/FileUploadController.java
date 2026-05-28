@@ -75,7 +75,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/files")
+@RequestMapping("/api/files")
 @CrossOrigin("*")
 public class FileUploadController {
 

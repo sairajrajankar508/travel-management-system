@@ -211,6 +211,7 @@ package com.travel.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -251,6 +252,17 @@ public class EmployeeController {
             @RequestHeader("Authorization") String token
     ) {
         return employeeService.getMyRequests(token);
+    }
+
+    // =====================================================
+    // DASHBOARD SUMMARY
+    // =====================================================
+    @GetMapping("/dashboard")
+    public Map<String, Object> getDashboard(
+            @RequestHeader("Authorization") String token
+    ) {
+        Long userId = employeeService.getUserIdFromToken(token);
+        return employeeService.getDashboard(userId);
     }
 
     // =====================================================

@@ -92,12 +92,13 @@ import org.springframework.web.bind.annotation.*;
 
 import com.travel.dto.ProfileResponse;
 import com.travel.dto.ProfileUpdateDTO;
+import com.travel.dto.CreateTravelRequestDTO;
 import com.travel.dto.TravelRequestResponse;
+import com.travel.service.EmployeeService;
+import com.travel.service.ManagerService;
 import com.travel.entity.TravelRequest;
 import com.travel.entity.TravelPolicy;
 import com.travel.repository.TravelPolicyRepository;
-import com.travel.service.EmployeeService;
-import com.travel.service.ManagerService;
 
 @RestController
 @RequestMapping("/api/manager")
@@ -160,6 +161,15 @@ public class ManagerController {
                 approve,
                 comment
         );
+    }
+
+    // ================= EDIT REQUEST =================
+    @PutMapping("/edit/{requestId}")
+    public String editRequest(
+            @PathVariable Long requestId,
+            @RequestBody CreateTravelRequestDTO dto
+    ) {
+        return managerService.editRequest(requestId, dto);
     }
 
     // ================= APPROVAL HISTORY =================

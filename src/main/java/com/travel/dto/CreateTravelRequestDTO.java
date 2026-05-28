@@ -146,6 +146,10 @@ public class CreateTravelRequestDTO {
 
     private String description;
 
+    private String documentUrl;
+
+    private String priority;
+
     private Boolean internationalTravel;
 
     private Integer totalDays;
@@ -236,6 +240,22 @@ public class CreateTravelRequestDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDocumentUrl() {
+        return documentUrl;
+    }
+
+    public void setDocumentUrl(String documentUrl) {
+        this.documentUrl = documentUrl;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 
     public Boolean getInternationalTravel() {

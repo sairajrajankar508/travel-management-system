@@ -228,7 +228,9 @@
 
 package com.travel.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -252,6 +254,12 @@ public class EmployeeService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ExpenseRepository expenseRepository;
+
+    @Autowired
+    private com.travel.repository.TravelPolicyRepository travelPolicyRepository;
 
     // =====================================================
     // TOKEN UTILITY
@@ -291,6 +299,30 @@ public class EmployeeService {
         req.setTransportMode(dto.getTransportMode());
         req.setAccommodation(dto.getAccommodation());
         req.setDescription(dto.getDescription());
+        req.setDocumentUrl(dto.getDocumentUrl());
+
+        if (dto.getPriority() != null) {
+            req.setPriority(Priority.valueOf(dto.getPriority()));
+        }
+
+        // ================= POLICY CHECK =================
+        List<com.travel.entity.TravelPolicy> policies = travelPolicyRepository.findByActiveTrue();
+        StringBuilder violations = new StringBuilder();
+
+        for (com.travel.entity.TravelPolicy policy : policies) {
+            if (dto.getBudget() != null && policy.getMaxBudget() != null
+                    && dto.getBudget() > policy.getMaxBudget()) {
+                violations.append("Budget ₹").append(dto.getBudget())
+                        .append(" exceeds policy limit of ₹").append(policy.getMaxBudget()).append(". ");
+            }
+        }
+
+        if (violations.length() > 0) {
+            req.setPolicyViolated(true);
+            req.setPolicyViolationReason(violations.toString().trim());
+        } else {
+            req.setPolicyViolated(false);
+        }
 
         req.setStatus(RequestStatus.DRAFT);
 
@@ -325,7 +357,17 @@ public class EmployeeService {
         res.setStartDate(req.getStartDate());
         res.setEndDate(req.getEndDate());
         res.setBudget(req.getBudget());
+        res.setDocumentUrl(req.getDocumentUrl());
+        res.setPriority(req.getPriority() != null ? req.getPriority().name() : null);
+        res.setPolicyViolated(req.getPolicyViolated());
+        res.setPolicyViolationReason(req.getPolicyViolationReason());
         res.setStatus(req.getStatus());
+
+        Double actual = expenseRepository.findByTravelRequest(req)
+                .stream()
+                .mapToDouble(com.travel.entity.Expense::getAmount)
+                .sum();
+        res.setActualExpense(actual);
 
         return res;
     }
@@ -500,5 +542,44 @@ public class EmployeeService {
         userRepository.save(user);
 
         return "Profile updated";
+    }
+
+    // =====================================================
+    // 10. DASHBOARD SUMMARY
+    // =====================================================
+    public Map<String, Object> getDashboard(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<TravelRequest> requests = travelRequestRepository.findByUser(user);
+
+        long total = requests.size();
+        long pending = requests.stream()
+                .filter(r -> r.getStatus() == RequestStatus.SUBMITTED || r.getStatus() == RequestStatus.DRAFT)
+                .count();
+        long approved = requests.stream()
+                .filter(r -> r.getStatus() == RequestStatus.MANAGER_APPROVED || r.getStatus() == RequestStatus.FINANCE_APPROVED)
+                .count();
+        long rejected = requests.stream()
+                .filter(r -> r.getStatus() == RequestStatus.REJECTED)
+                .count();
+        double totalBudget = requests.stream().mapToDouble(TravelRequest::getBudget).sum();
+
+        List<TravelRequestResponse> upcomingTrips = requests.stream()
+                .filter(r -> (r.getStatus() == RequestStatus.MANAGER_APPROVED || r.getStatus() == RequestStatus.FINANCE_APPROVED)
+                        && !r.getStartDate().isBefore(java.time.LocalDate.now()))
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+
+        Map<String, Object> dashboard = new HashMap<>();
+        dashboard.put("totalRequests", total);
+        dashboard.put("pendingRequests", pending);
+        dashboard.put("approvedRequests", approved);
+        dashboard.put("rejectedRequests", rejected);
+        dashboard.put("totalBudget", totalBudget);
+        dashboard.put("upcomingTrips", upcomingTrips);
+
+        return dashboard;
     }
 }

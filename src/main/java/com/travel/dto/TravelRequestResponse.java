@@ -174,6 +174,16 @@ public class TravelRequestResponse {
 
     private String description;
 
+    private String documentUrl;
+
+    private String priority;
+
+    private Double actualExpense;
+
+    private Boolean policyViolated;
+
+    private String policyViolationReason;
+
     private RequestStatus status;
 
     private String managerComment;
@@ -264,6 +274,46 @@ public class TravelRequestResponse {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDocumentUrl() {
+        return documentUrl;
+    }
+
+    public void setDocumentUrl(String documentUrl) {
+        this.documentUrl = documentUrl;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public Double getActualExpense() {
+        return actualExpense;
+    }
+
+    public void setActualExpense(Double actualExpense) {
+        this.actualExpense = actualExpense;
+    }
+
+    public Boolean getPolicyViolated() {
+        return policyViolated;
+    }
+
+    public void setPolicyViolated(Boolean policyViolated) {
+        this.policyViolated = policyViolated;
+    }
+
+    public String getPolicyViolationReason() {
+        return policyViolationReason;
+    }
+
+    public void setPolicyViolationReason(String policyViolationReason) {
+        this.policyViolationReason = policyViolationReason;
     }
 
     public RequestStatus getStatus() {

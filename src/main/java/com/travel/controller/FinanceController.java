@@ -206,6 +206,11 @@ public class FinanceController {
         return financeService.getCategoryReport();
     }
 
+    @GetMapping("/monthly-report")
+    public Map<String, Double> monthlyReport() {
+        return financeService.getMonthlyExpenseReport();
+    }
+
     @GetMapping("/recent-expenses")
     public List<ExpenseResponse> recentExpenses() {
         return financeService.getRecentExpenses();
@@ -221,8 +226,12 @@ public class FinanceController {
     // ===================== PAYMENT HISTORY =====================
     
     @PutMapping("/travel-reject/{requestId}")
-    public String rejectTravelRequest(@PathVariable Long requestId) {
-        return financeService.rejectTravelRequest(requestId);
+    public String rejectTravelRequest(
+            @PathVariable Long requestId,
+            @RequestBody(required = false) Map<String, String> body
+    ) {
+        String comment = (body != null) ? body.get("comment") : null;
+        return financeService.rejectTravelRequest(requestId, comment);
     }
 
     @GetMapping("/payment-history")

@@ -608,6 +608,10 @@ public class FinanceService {
             dto.setTransportMode(r.getTransportMode());
             dto.setAccommodation(r.getAccommodation());
             dto.setStatus(r.getStatus());
+            dto.setDocumentUrl(r.getDocumentUrl());
+            dto.setPriority(r.getPriority() != null ? r.getPriority().name() : null);
+            dto.setPolicyViolated(r.getPolicyViolated());
+            dto.setPolicyViolationReason(r.getPolicyViolationReason());
             dto.setManagerComment(r.getManagerComment());
             dto.setEmployeeName(r.getUser().getName());
 
@@ -701,12 +705,37 @@ public class FinanceService {
         return map;
     }
 
-    public String rejectTravelRequest(Long requestId) {
+    // =====================================================
+    // MONTHLY EXPENSE CHART DATA
+    // =====================================================
+    public Map<String, Double> getMonthlyExpenseReport() {
+
+        List<Expense> expenses = expenseRepository.findAll();
+
+        Map<String, Double> map = new LinkedHashMap<>();
+
+        for (Expense e : expenses) {
+
+            if (e.getExpenseDate() != null) {
+
+                String month = e.getExpenseDate().getMonth().toString()
+                        + " " + e.getExpenseDate().getYear();
+
+                map.put(month,
+                        map.getOrDefault(month, 0.0) + e.getAmount());
+            }
+        }
+
+        return map;
+    }
+
+    public String rejectTravelRequest(Long requestId, String comment) {
 
         TravelRequest request = travelRequestRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("Travel request not found"));
 
         request.setStatus(RequestStatus.REJECTED);
+        request.setFinanceComment(comment);
 
         travelRequestRepository.save(request);
 

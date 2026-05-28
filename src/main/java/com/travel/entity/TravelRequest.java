@@ -180,11 +180,13 @@ package com.travel.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import com.travel.enums.RequestStatus;
-
 import jakarta.persistence.*;
 
+import com.travel.enums.Priority;
+import com.travel.enums.RequestStatus;
+
 @Entity
+@Table(name = "travel_request")
 public class TravelRequest {
 
     @Id
@@ -222,6 +224,19 @@ public class TravelRequest {
     // ================= STATUS =================
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
+
+    // ================= PRIORITY =================
+    @Enumerated(EnumType.STRING)
+    private Priority priority;
+
+    // ================= POLICY VIOLATION =================
+    private Boolean policyViolated = false;
+
+    @Column(length = 1000)
+    private String policyViolationReason;
+
+    // ================= DOCUMENT =================
+    private String documentUrl;
 
     // ================= MANAGER =================
     @Column(length = 1000)
@@ -346,6 +361,38 @@ public class TravelRequest {
 
     public void setStatus(RequestStatus status) {
         this.status = status;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    public Boolean getPolicyViolated() {
+        return policyViolated;
+    }
+
+    public void setPolicyViolated(Boolean policyViolated) {
+        this.policyViolated = policyViolated;
+    }
+
+    public String getPolicyViolationReason() {
+        return policyViolationReason;
+    }
+
+    public void setPolicyViolationReason(String policyViolationReason) {
+        this.policyViolationReason = policyViolationReason;
+    }
+
+    public String getDocumentUrl() {
+        return documentUrl;
+    }
+
+    public void setDocumentUrl(String documentUrl) {
+        this.documentUrl = documentUrl;
     }
 
     public String getManagerComment() {

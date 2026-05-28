@@ -191,6 +191,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.travel.dto.CreateTravelRequestDTO;
 import com.travel.dto.TravelRequestResponse;
 import com.travel.entity.TravelRequest;
 import com.travel.enums.RequestStatus;
@@ -400,6 +401,22 @@ public class ManagerService {
                 request.getUser().getName()
         );
 
+        dto.setDocumentUrl(
+                request.getDocumentUrl()
+        );
+
+        dto.setPriority(
+                request.getPriority() != null ? request.getPriority().name() : null
+        );
+
+        dto.setPolicyViolated(
+                request.getPolicyViolated()
+        );
+
+        dto.setPolicyViolationReason(
+                request.getPolicyViolationReason()
+        );
+
         return dto;
     }
 
@@ -501,6 +518,30 @@ public class ManagerService {
                 .stream()
                 .mapToDouble(TravelRequest::getBudget)
                 .sum();
+    }
+
+    // =====================================================
+    // EDIT REQUEST (MANAGER)
+    // =====================================================
+    public String editRequest(Long requestId, CreateTravelRequestDTO dto) {
+
+        TravelRequest req = travelRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        if (dto.getSource() != null) req.setSource(dto.getSource());
+        if (dto.getDestination() != null) req.setDestination(dto.getDestination());
+        if (dto.getPurpose() != null) req.setPurpose(dto.getPurpose());
+        if (dto.getStartDate() != null) req.setStartDate(dto.getStartDate());
+        if (dto.getEndDate() != null) req.setEndDate(dto.getEndDate());
+        if (dto.getBudget() != null) req.setBudget(dto.getBudget());
+        if (dto.getTransportMode() != null) req.setTransportMode(dto.getTransportMode());
+        if (dto.getAccommodation() != null) req.setAccommodation(dto.getAccommodation());
+        if (dto.getDescription() != null) req.setDescription(dto.getDescription());
+        if (dto.getDocumentUrl() != null) req.setDocumentUrl(dto.getDocumentUrl());
+
+        travelRequestRepository.save(req);
+
+        return "Request updated successfully";
     }
 
 }
