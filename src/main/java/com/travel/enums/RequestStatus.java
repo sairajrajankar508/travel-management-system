@@ -45,5 +45,6 @@ public enum RequestStatus {
 
     // FAILURE STATES
     CANCELLED,
-    REJECTED
+    REJECTED,
+    DISMISSED
 }

@@ -30,11 +30,24 @@ public class NotificationService {
         for (User u : allUsers) {
             Notification n = new Notification();
             n.setUser(u);
+            n.setTitle("Broadcast");
             n.setMessage(message);
+            n.setType("BROADCAST");
             n.setReadFlag(false);
             n.setCreatedAt(java.time.LocalDateTime.now());
             notificationRepository.save(n);
         }
+    }
+
+    public List<Notification> getAllNotifications() {
+        return notificationRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    @Transactional
+    public void adminDelete(Long notificationId) {
+        Notification n = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+        notificationRepository.delete(n);
     }
 
     @Transactional

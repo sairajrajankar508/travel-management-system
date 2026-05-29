@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.travel.dto.CreateUserRequest;
 import com.travel.dto.UserResponse;
+import com.travel.entity.Notification;
 import com.travel.entity.TravelPolicy;
+import com.travel.entity.TravelRequest;
 import com.travel.entity.User;
 import com.travel.entity.WorkflowConfig;
 import com.travel.service.AdminService;
@@ -91,6 +93,14 @@ public class AdminController {
         return adminService.getAllPolicies();
     }
 
+    @PutMapping("/policy/{id}")
+    public TravelPolicy updatePolicy(
+            @PathVariable Long id,
+            @RequestBody TravelPolicy policy
+    ) {
+        return adminService.updatePolicy(id, policy.getMaxBudget(), policy.getAllowedClass());
+    }
+
     @PutMapping("/policy/toggle/{id}")
     public String togglePolicy(@PathVariable Long id) {
         return adminService.togglePolicy(id);
@@ -150,5 +160,33 @@ public class AdminController {
         Long senderId = employeeService.getUserIdFromToken(token);
         notificationService.broadcast(message, senderId);
         return "Notification broadcast to all users";
+    }
+
+    @GetMapping("/notifications/history")
+    public List<Notification> getNotificationHistory() {
+        return notificationService.getAllNotifications();
+    }
+
+    @DeleteMapping("/notifications/{id}")
+    public String deleteNotification(@PathVariable Long id) {
+        notificationService.adminDelete(id);
+        return "Notification deleted";
+    }
+
+    // ================= POLICY VIOLATIONS =================
+
+    @GetMapping("/requests/violations")
+    public List<TravelRequest> getPolicyViolations() {
+        return adminService.getPolicyViolations();
+    }
+
+    @PutMapping("/requests/{id}/waive-violation")
+    public String waiveViolation(@PathVariable Long id) {
+        return adminService.waiveViolation(id);
+    }
+
+    @PutMapping("/requests/{id}/dismiss")
+    public String dismissRequest(@PathVariable Long id) {
+        return adminService.dismissRequest(id);
     }
 }

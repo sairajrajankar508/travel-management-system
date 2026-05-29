@@ -77,4 +77,10 @@ public interface TravelRequestRepository
             List<RequestStatus> statuses
     );
 
+    // =====================================================
+    // FIND POLICY VIOLATED REQUESTS
+    // =====================================================
+
+    List<TravelRequest> findByPolicyViolatedTrue();
+
 }

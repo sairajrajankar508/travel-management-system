@@ -216,6 +216,13 @@ public class FinanceController {
         return financeService.getRecentExpenses();
     }
 
+    // ===================== PENDING APPROVALS =====================
+
+    @GetMapping("/pending-approvals")
+    public List<ExpenseResponse> getPendingApprovals() {
+        return financeService.getPendingApprovals();
+    }
+
     // ===================== PENDING REIMBURSEMENTS =====================
 
     @GetMapping("/pending-reimbursements")

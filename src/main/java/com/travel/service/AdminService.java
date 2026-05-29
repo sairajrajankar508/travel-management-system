@@ -320,7 +320,9 @@ import com.travel.dto.CreateUserRequest;
 import com.travel.dto.UserResponse;
 import com.travel.entity.AuditLog;
 import com.travel.entity.TravelPolicy;
+import com.travel.entity.TravelRequest;
 import com.travel.entity.User;
+import com.travel.enums.RequestStatus;
 import com.travel.repository.AuditLogRepository;
 import com.travel.repository.ExpenseRepository;
 import com.travel.repository.TravelPolicyRepository;
@@ -449,6 +451,16 @@ public class AdminService {
         return policyRepository.findAll();
     }
 
+    public TravelPolicy updatePolicy(Long id, Double maxBudget, String allowedClass) {
+        TravelPolicy policy = policyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Policy not found"));
+        if (maxBudget != null) policy.setMaxBudget(maxBudget);
+        if (allowedClass != null) policy.setAllowedClass(allowedClass);
+        policyRepository.save(policy);
+        log("POLICY_UPDATED", "SYSTEM", "SUCCESS");
+        return policy;
+    }
+
     public String togglePolicy(Long id) {
 
         TravelPolicy policy = policyRepository.findById(id)
@@ -473,6 +485,33 @@ public class AdminService {
         log("POLICY_DELETED", "SYSTEM", "SUCCESS");
 
         return "Policy deleted successfully";
+    }
+
+    // =====================================================
+    // POLICY VIOLATIONS
+    // =====================================================
+
+    public List<TravelRequest> getPolicyViolations() {
+        return travelRequestRepository.findByPolicyViolatedTrue();
+    }
+
+    public String waiveViolation(Long id) {
+        TravelRequest req = travelRequestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+        req.setPolicyViolated(false);
+        req.setPolicyViolationReason(null);
+        travelRequestRepository.save(req);
+        log("VIOLATION_WAIVED", "ADMIN", "SUCCESS");
+        return "Violation waived";
+    }
+
+    public String dismissRequest(Long id) {
+        TravelRequest req = travelRequestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+        req.setStatus(RequestStatus.DISMISSED);
+        travelRequestRepository.save(req);
+        log("REQUEST_DISMISSED", "ADMIN", "SUCCESS");
+        return "Request dismissed";
     }
 
     // =====================================================

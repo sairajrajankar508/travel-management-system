@@ -70,6 +70,14 @@ public class DepartmentService {
                 .collect(Collectors.toList());
     }
 
+    // UPDATE DEPARTMENT
+    public Department update(Long id, String name) {
+        Department dept = departmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+        dept.setName(name);
+        return departmentRepository.save(dept);
+    }
+
     // DELETE (SOFT DELETE IMPROVED)
     public String delete(Long id) {
 
