@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.travel.dto.CreateUserRequest;
 import com.travel.dto.UserResponse;
 import com.travel.entity.AuditLog;
+import com.travel.entity.Expense;
+import com.travel.entity.Itinerary;
 import com.travel.entity.TravelPolicy;
 import com.travel.entity.TravelRequest;
 import com.travel.entity.User;
@@ -20,6 +22,7 @@ import com.travel.repository.AuditLogRepository;
 import com.travel.repository.ExpenseRepository;
 import com.travel.repository.TravelPolicyRepository;
 import com.travel.repository.TravelRequestRepository;
+import com.travel.repository.ItineraryRepository;
 import com.travel.repository.UserRepository;
 
 @Service
@@ -39,6 +42,9 @@ public class AdminService {
 
     @Autowired
     private AuditLogRepository auditRepository;
+
+    @Autowired
+    private ItineraryRepository itineraryRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -100,6 +106,17 @@ public class AdminService {
         if ("admin@test.com".equals(user.getEmail())) {
             throw new RuntimeException("System Admin cannot be deleted");
         }
+
+        // Delete all related records (cascade manually)
+        List<Expense> expenses = expenseRepository.findByUser(user);
+        expenseRepository.deleteAll(expenses);
+
+        List<TravelRequest> requests = travelRequestRepository.findByUser(user);
+        for (TravelRequest req : requests) {
+            List<Itinerary> itineraries = itineraryRepository.findByTravelRequestOrderByDayNumberAsc(req);
+            itineraryRepository.deleteAll(itineraries);
+        }
+        travelRequestRepository.deleteAll(requests);
 
         userRepository.delete(user);
 

@@ -1,15 +1,3 @@
-//package com.travel.enums;
-//
-//public enum ExpenseStatus {
-//
-//    SUBMITTED,
-//    MANAGER_REVIEWED,
-//    FINANCE_APPROVED,
-//    REIMBURSED,
-//    REJECTED
-//}
-
-
 package com.travel.enums;
 
 public enum ExpenseStatus {

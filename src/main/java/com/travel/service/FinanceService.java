@@ -290,6 +290,30 @@ public class FinanceService {
         return map;
     }
 
+    // =====================================================
+    // MONTHLY REQUEST CHART DATA
+    // =====================================================
+    public Map<String, Long> getMonthlyRequestReport() {
+
+        List<TravelRequest> requests = travelRequestRepository.findAll();
+
+        Map<String, Long> map = new LinkedHashMap<>();
+
+        for (TravelRequest r : requests) {
+
+            if (r.getCreatedAt() != null) {
+
+                String month = r.getCreatedAt().getMonth().toString()
+                        + " " + r.getCreatedAt().getYear();
+
+                map.put(month,
+                        map.getOrDefault(month, 0L) + 1);
+            }
+        }
+
+        return map;
+    }
+
     public String rejectTravelRequest(Long requestId, String comment) {
 
         TravelRequest request = travelRequestRepository.findById(requestId)

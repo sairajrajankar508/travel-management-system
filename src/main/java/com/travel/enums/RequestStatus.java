@@ -1,16 +1,3 @@
-//package com.travel.enums;
-//
-//public enum RequestStatus {
-//
-//    DRAFT,
-//    SUBMITTED,
-//    MANAGER_APPROVED,
-//    REJECTED,
-//    FINANCE_APPROVED,
-//    COMPLETED
-//}
-
-
 package com.travel.enums;
 
 public enum RequestStatus {

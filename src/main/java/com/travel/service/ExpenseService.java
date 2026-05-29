@@ -73,7 +73,7 @@ public class ExpenseService {
 
         expense.setUser(user);
         expense.setTravelRequest(request);
-        expense.setReceiptUrl(fileName);
+        expense.setReceiptUrl(fileName != null ? "/file_uploads/" + fileName : null);
         expense.setActionDate(LocalDateTime.now());
 
         expenseRepository.save(expense);
@@ -186,7 +186,9 @@ public class ExpenseService {
                     dto.setDescription(exp.getDescription());
                     dto.setExpenseDate(exp.getExpenseDate());
                     dto.setStatus(exp.getStatus());
-                    dto.setReceiptUrl(exp.getReceiptUrl());
+                    String ru = exp.getReceiptUrl();
+                    if (ru != null && !ru.startsWith("/file_uploads/")) ru = "/file_uploads/" + ru;
+                    dto.setReceiptUrl(ru);
 
                     if (exp.getTravelRequest() != null) {
                         dto.setTravelRequestId(exp.getTravelRequest().getId());

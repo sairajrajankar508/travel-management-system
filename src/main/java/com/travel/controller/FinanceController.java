@@ -1,129 +1,3 @@
-//package com.travel.controller;
-//
-//import java.util.List;
-//import java.util.Map;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.web.bind.annotation.*;
-//
-//import com.travel.dto.ExpenseResponse;
-//import com.travel.service.FinanceService;
-//
-//@RestController
-//@RequestMapping("/finance")
-//@CrossOrigin("*")
-//public class FinanceController {
-//
-//    @Autowired
-//    private FinanceService financeService;
-//
-//    // =====================================================
-//    // FINANCE APPROVAL
-//    // MANAGER_REVIEWED -> FINANCE_APPROVED
-//    // =====================================================
-//    @PutMapping("/approve/{expenseId}")
-//    public Map<String, Object> approveExpense(
-//
-//            @PathVariable
-//            Long expenseId
-//    ) {
-//
-//        return financeService.approveExpense(
-//                expenseId
-//        );
-//    }
-//
-//    // =====================================================
-//    // REJECT EXPENSE
-//    // =====================================================
-//    @PutMapping("/reject/{expenseId}")
-//    public Map<String, Object> rejectExpense(
-//
-//            @PathVariable
-//            Long expenseId
-//    ) {
-//
-//        return financeService.rejectExpense(
-//                expenseId
-//        );
-//    }
-//
-//    // =====================================================
-//    // FINAL REIMBURSEMENT
-//    // FINANCE_APPROVED -> REIMBURSED
-//    // =====================================================
-//    @PutMapping("/reimburse/{expenseId}")
-//    public Map<String, Object> reimburseExpense(
-//
-//            @PathVariable
-//            Long expenseId
-//    ) {
-//
-//        return financeService.reimburseExpense(
-//                expenseId
-//        );
-//    }
-//
-//    // =====================================================
-//    // PENDING FINANCE APPROVALS
-//    // SHOW IN ExpenseApproval.jsx
-//    // =====================================================
-//    @GetMapping("/pending-approvals")
-//    public List<ExpenseResponse> getPendingApprovals() {
-//
-//        return financeService.getPendingApprovals();
-//    }
-//
-//    // =====================================================
-//    // PENDING REIMBURSEMENTS
-//    // SHOW IN Reimbursements.jsx
-//    // =====================================================
-//    @GetMapping("/pending-reimbursements")
-//    public List<ExpenseResponse> getPendingReimbursements() {
-//
-//        return financeService.getPendingReimbursements();
-//    }
-//
-//    // =====================================================
-//    // DEPARTMENT EXPENSE REPORT
-//    // =====================================================
-//    @GetMapping("/report")
-//    public Map<String, Double> departmentExpenseReport() {
-//
-//        return financeService.departmentExpenseReport();
-//    }
-//
-//    // =====================================================
-//    // FINANCE DASHBOARD
-//    // =====================================================
-//    @GetMapping("/dashboard")
-//    public Map<String, Object> dashboard() {
-//
-//        return financeService.getDashboard();
-//    }
-//
-//    @GetMapping("/payment-history")
-//    public List<ExpenseResponse> getPaymentHistory() {
-//
-//        return financeService.getPaymentHistory();
-//    }
-//
-//    @GetMapping("/category-report")
-//    public Map<String, Double> categoryReport() {
-//
-//        return financeService.getCategoryReport();
-//    }
-//    
-//    @GetMapping("/recent-expenses")
-//    public List<ExpenseResponse> recentExpenses() {
-//
-//        return financeService.getRecentExpenses();
-//    }
-//    
-//}
-
-
-
 package com.travel.controller;
 
 import java.util.List;
@@ -136,8 +10,6 @@ import com.travel.dto.ProfileResponse;
 import com.travel.dto.ProfileUpdateDTO;
 import com.travel.dto.ExpenseResponse;
 import com.travel.dto.TravelRequestResponse;
-import com.travel.entity.AuditLog;
-import com.travel.repository.AuditLogRepository;
 import com.travel.service.EmployeeService;
 import com.travel.service.FinanceService;
 
@@ -151,9 +23,6 @@ public class FinanceController {
 
     @Autowired
     private EmployeeService employeeService;
-
-    @Autowired
-    private AuditLogRepository auditLogRepository;
 
     // ===================== TRAVEL REQUESTS =====================
 
@@ -211,6 +80,11 @@ public class FinanceController {
         return financeService.getMonthlyExpenseReport();
     }
 
+    @GetMapping("/monthly-requests-report")
+    public Map<String, Long> monthlyRequestsReport() {
+        return financeService.getMonthlyRequestReport();
+    }
+
     @GetMapping("/recent-expenses")
     public List<ExpenseResponse> recentExpenses() {
         return financeService.getRecentExpenses();
@@ -264,10 +138,4 @@ public class FinanceController {
         return employeeService.updateProfile(userId, dto);
     }
 
-    // ===================== AUDIT & VERIFICATION =====================
-    @GetMapping("/audit/logs")
-    public List<AuditLog> getAuditLogs() {
-        return auditLogRepository.findAll();
-    }
-    
 }
