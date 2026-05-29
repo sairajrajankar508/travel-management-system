@@ -205,7 +205,7 @@ public class ManagerService {
 
     // =====================================================
     // GET PENDING REQUESTS
-    // SHOW SUBMITTED + MANAGER_REVIEW
+    // SHOW SUBMITTED + POLICY_VALIDATION + MANAGER_REVIEW
     // =====================================================
 
     public List<TravelRequestResponse> getPendingRequests() {
@@ -216,9 +216,9 @@ public class ManagerService {
                         .filter(r ->
 
                                 r.getStatus() == RequestStatus.SUBMITTED
-
                                 ||
-
+                                r.getStatus() == RequestStatus.POLICY_VALIDATION
+                                ||
                                 r.getStatus() == RequestStatus.MANAGER_REVIEW
                         )
                         .collect(Collectors.toList());
@@ -251,6 +251,10 @@ public class ManagerService {
         if (
 
                 request.getStatus() != RequestStatus.SUBMITTED
+
+                &&
+
+                request.getStatus() != RequestStatus.POLICY_VALIDATION
 
                 &&
 

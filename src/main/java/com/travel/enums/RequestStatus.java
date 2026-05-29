@@ -19,6 +19,9 @@ public enum RequestStatus {
     DRAFT,
     SUBMITTED,
 
+    // POLICY VALIDATION
+    POLICY_VALIDATION,
+
     // MANAGER
     MANAGER_REVIEW,
     MANAGER_APPROVED,

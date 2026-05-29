@@ -500,9 +500,12 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Request not found"));
         req.setPolicyViolated(false);
         req.setPolicyViolationReason(null);
+        if (req.getStatus() == RequestStatus.POLICY_VALIDATION) {
+            req.setStatus(RequestStatus.MANAGER_REVIEW);
+        }
         travelRequestRepository.save(req);
         log("VIOLATION_WAIVED", "ADMIN", "SUCCESS");
-        return "Violation waived";
+        return "Violation waived — request moved to manager review";
     }
 
     public String dismissRequest(Long id) {

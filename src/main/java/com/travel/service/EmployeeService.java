@@ -414,11 +414,36 @@ public class EmployeeService {
             return "Only draft can be submitted";
         }
 
-        req.setStatus(RequestStatus.MANAGER_REVIEW);
+        // STEP 1 — Set SUBMITTED
+        req.setStatus(RequestStatus.SUBMITTED);
+
+        // STEP 2 — Re-check policy violations
+        List<com.travel.entity.TravelPolicy> policies = travelPolicyRepository.findByActiveTrue();
+        StringBuilder violations = new StringBuilder();
+
+        for (com.travel.entity.TravelPolicy policy : policies) {
+            if (req.getBudget() != null && policy.getMaxBudget() != null
+                    && req.getBudget() > policy.getMaxBudget()) {
+                violations.append("Budget ₹").append(req.getBudget())
+                        .append(" exceeds policy limit of ₹").append(policy.getMaxBudget()).append(". ");
+            }
+        }
+
+        if (violations.length() > 0) {
+            req.setPolicyViolated(true);
+            req.setPolicyViolationReason(violations.toString().trim());
+            req.setStatus(RequestStatus.POLICY_VALIDATION);
+        } else {
+            req.setPolicyViolated(false);
+            req.setPolicyViolationReason(null);
+            req.setStatus(RequestStatus.MANAGER_REVIEW);
+        }
 
         travelRequestRepository.save(req);
 
-        return "Request submitted";
+        return violations.length() > 0
+                ? "Request submitted — pending policy validation"
+                : "Request submitted for manager approval";
     }
 
     // =====================================================
